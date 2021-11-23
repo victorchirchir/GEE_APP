@@ -1,0 +1,20 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var OP = ee.FeatureCollection("GOOGLE/Research/open-buildings/v1/polygons"),
+    geometry = /* color: #d63000 */ee.Geometry.Point([36.735346971056174, -1.393044399326964]),
+    KN = ee.FeatureCollection("users/vctrchirchir/Kajiado_North"),
+    L7 = ee.ImageCollection("LANDSAT/LE07/C01/T1_TOA");
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+// Visualization of GOOGLE/Research/open-buildings/v1/polygons.
+var filtered2000=ee.Image(L7.filterBounds(geometry).filterDate('2000-01-01','2000-12-31').sort('CLOUD_COVER').first());
+var ClipKN=filtered2000.clip(KN);
+
+var t_060_065 = OP.filter('confidence >= 0.60 && confidence < 0.65');
+var t_065_070 = OP.filter('confidence >= 0.65 && confidence < 0.70');
+var t_gte_070 = OP.filter('confidence >= 0.70');
+
+
+Map.addLayer(t_060_065, {color: 'FF0000'}, 'Buildings confidence [0.60; 0.65)');
+Map.addLayer(t_065_070, {color: 'FFFF00'}, 'Buildings confidence [0.65; 0.70)');
+Map.addLayer(t_gte_070, {color: '00FF00'}, 'Buildings confidence >= 0.70');
+Map.setCenter(36.74,-1.39, 10);  // Ongata Rongai, Kenya
+Map.setOptions('SATELLITE');

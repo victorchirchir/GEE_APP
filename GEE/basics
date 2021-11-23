@@ -1,0 +1,10 @@
+var my_grade=90;
+print(my_grade);
+print('this statement will print in the console');
+var geospatial=['survey','photogrametry','remote_sensing','GIS','engineering_survey'];
+var remote_sensing=['landsat','modus','eros','naip'];
+print(geospatial[0]);
+print(remote_sensing[3]);
+var my_dic={'survey':'theodolite','remote_sensing':'gee','photogrammetry':'ERDAS','GIS':'ArcGis'};
+print(my_dic['GIS'])
+print(my_dic.remote_sensing)

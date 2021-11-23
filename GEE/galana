@@ -1,0 +1,205 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var L4 = ee.ImageCollection("LANDSAT/LT04/C01/T1_TOA"),
+    L5 = ee.ImageCollection("LANDSAT/LT05/C01/T1_TOA"),
+    point = 
+    /* color: #d63000 */
+    /* shown: false */
+    ee.Geometry.Point([37.10422839924243, -1.055108771702224]),
+    Galana = ee.FeatureCollection("users/vctrchirchir/Athi_Galana_Basin"),
+    point2 = /* color: #98ff00 */ee.Geometry.Point([38.2101901738364, -2.7511896364582795]),
+    point3 = 
+    /* color: #0b4a8b */
+    /* shown: false */
+    ee.Geometry.Point([39.7427829472739, -3.0529258473058882]),
+    point4 = /* color: #ffc82d */ee.Geometry.Point([37.8915866582114, -1.9224188893569683]),
+    clip2 = 
+    /* color: #00ffff */
+    /* shown: false */
+    ee.Geometry.Polygon(
+        [[[37.530847454205514, -2.525357571581001],
+          [38.371301555768014, -3.441462813601403],
+          [38.942590618268014, -3.3482429092807657],
+          [39.003015422955514, -2.88201519790087],
+          [37.975793743268014, -1.6772421817025904],
+          [37.98747124854321, -1.8524436381277034],
+          [37.94971696939966, -1.9837216231836963],
+          [37.93391687444815, -2.0793321817120507],
+          [37.901636028424264, -2.191410248738046],
+          [37.90163625059986, -2.2655164230648435],
+          [37.82885198606811, -2.3986140849507644],
+          [37.714183119045195, -2.4596752053418385],
+          [37.566553020611764, -2.421936040001809]]]),
+    clip4 = 
+    /* color: #bf04c2 */
+    /* shown: false */
+    ee.Geometry.Polygon(
+        [[[37.876916790143014, -1.710186766125618],
+          [37.805505657330514, -1.9997990109220853],
+          [37.970300579205514, -2.046461799075969],
+          [38.05681791318989, -2.0176408235899106],
+          [37.931848430768014, -1.7211681691213592]]]),
+    L7 = ee.ImageCollection("LANDSAT/LE07/C01/T1_TOA"),
+    clip3 = 
+    /* color: #d63000 */
+    /* shown: false */
+    ee.Geometry.Polygon(
+        [[[39.1511252937306, -3.3297365696688397],
+          [39.83502421951185, -3.4311832660875825],
+          [40.0849631843556, -3.299574711221166],
+          [40.17010722732435, -3.050019545686507],
+          [40.0190452156056, -2.6577462050466383],
+          [39.62628398513685, -2.6412843295943444],
+          [38.984957080839976, -2.929334441353394],
+          [38.98358378982435, -2.9800786578630896],
+          [38.97605791691777, -3.042897160316565],
+          [38.965414911546674, -3.1519142853269555],
+          [38.954428583421674, -3.230070499886863],
+          [38.959921747484174, -3.2526935508408643]]]);
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+var bands=['B1','B2','B3','B4','B5','B7'];
+// var filter1=L4.filterDate('1987-01-01','1994-12-31').filterBounds(point).sort('CLOUD_COVER').first().clip(Galana).select(bands);
+var vizparamsT={bands:['B3','B2','B1'],min:0,max:0.5,gamma:[0.95,1.1,1]};
+var vizparamsF={bands:['B4','B3','B2'],min:0,max:0.5,gamma:[0.95,1.1,1]};
+Map.setCenter(37.10,-1.06,8);
+// print(filter1);
+// var filter2=L5.filterDate('1987-01-01','1994-12-31').filterBounds(point2).sort('CLOUD_COVER').first().clip(clip2);
+// print(filter2);
+// var filter2=filter2.clip(Galana).select(bands)
+
+// var filter3=L4.filterDate('1987-01-01','1994-12-31').filterBounds(point3).sort('CLOUD_COVER').first().clip(Galana).select(bands);
+// print(filter3);
+
+// var filter4=L5.filterDate('1987-01-01','1994-12-31').filterBounds(point4).sort('CLOUD_COVER').first().clip(clip4);
+// print(filter4);
+// filter4=filter4.clip(Galana).select(bands);
+
+// Export.image.toDrive({
+//   image:filter1,
+//   description:'image1',
+//   scale:30,
+//   maxPixels:1e13,
+//   region:Galana
+// });
+
+
+
+// Map.addLayer(Galana,{},'galana basin');
+// Map.addLayer(filter1,vizparamsT,'rgb image');
+// Map.addLayer(filter1,vizparamsF,'false image');
+
+// Map.addLayer(filter2,vizparamsT,'rgb image 2');
+// Map.addLayer(filter2,vizparamsF,'false image 2');
+
+// Map.addLayer(filter3,vizparamsT,'rgb image 3');
+// Map.addLayer(filter3,vizparamsF,'false image 3');
+
+// Map.addLayer(filter4,vizparamsT,'rgb image 4');
+// Map.addLayer(filter4,vizparamsF,'false image 4');
+
+
+// //extraction of 2000 image with least cloud cover
+// var filter1_00=L7.filterDate('2000-1-1','2000-12-31').filterBounds(point).sort('CLOUD_COVER').first().clip(Galana).select(bands);
+// print(filter1_00);
+// Map.addLayer(filter1_00,vizparamsT,'rgb image 1_00');
+// Map.addLayer(filter1_00,vizparamsF,'false image 1_00');
+// var filter2_00=L7.filterDate('2000-1-1','2000-12-31').filterBounds(point2).sort('CLOUD_COVER').first().clip(Galana).select(bands);
+// print(filter2_00);
+Map.addLayer(Galana,{},'basin');
+// Map.addLayer(filter2_00,vizparamsT,'rgb image 2_00');
+// Map.addLayer(filter2_00,vizparamsF,'false image 2_00');
+// var filter3_00=L7.filterDate('2000-1-1','2000-12-31').filterBounds(point3).sort('CLOUD_COVER').first().clip(Galana).select(bands);
+// print(filter3_00);
+// Map.addLayer(filter3_00,vizparamsT,'rgb image 3_00');
+// Map.addLayer(filter3_00,vizparamsF,'false image 3_00');
+// var filter4_00=L7.filterDate('2000-1-1','2000-12-31').filterBounds(point4).sort('CLOUD_COVER').first().clip(clip4).select(bands);
+// var filter4_00=filter4_00.clip(Galana);
+// print(filter4_00);
+// Map.addLayer(filter4_00,vizparamsT,'rgb image 4_00');
+// Map.addLayer(filter4_00,vizparamsF,'false image 4_00');
+
+// Export.image.toDrive({
+//   image:filter4_00,
+//   description:'image4b',
+//   scale:30,
+//   maxPixels:1e13,
+//   region:Galana
+// });
+
+/////2010
+//obtain a landsat 7 2010 image with the least land cover
+var filtered2010=L7.filterBounds(point).filterDate('2010-01-01','2010-12-31').sort('CLOUD_COVER').first();
+//rectify scan line error
+var fill2010=filtered2010.focalMean(1,'square','pixels',20);
+var final2010=fill2010.blend(filtered2010).clip(Galana).select(bands);
+
+print(filtered2010);
+//display L7 2010 image
+// Map.addLayer(filtered2010,vizparamsF,'false2010');
+// Map.addLayer(filtered2010,vizparamsT,'True2010');
+//display scan line rectified image
+// Map.addLayer(fill2010,vizparamsF,'false_fill2004');
+// Map.addLayer(fill2010,vizparamsT,'True_fill2004');
+Map.addLayer(final2010,vizparamsF,'final_false2010');
+Map.addLayer(final2010,vizparamsT,'final_True2010');
+
+//obtain a landsat 7 2010 image with the least land cover
+var filtered2010_2=L7.filterBounds(point2).filterDate('2010-01-01','2010-12-31').sort('CLOUD_COVER').first();
+//rectify scan line error
+var fill2010_2=filtered2010_2.focalMean(1,'square','pixels',20);
+var final2010_2=fill2010_2.blend(filtered2010_2).clip(clip2);
+var final2010_2=final2010_2.clip(Galana).select(bands);
+
+print(filtered2010_2);
+//display L7 2010 image
+// Map.addLayer(filtered2010_2,vizparamsF,'false2010_2');
+// Map.addLayer(filtered2010_2,vizparamsT,'True2010_2');
+//display scan line rectified image
+// Map.addLayer(fill2010_2,vizparamsF,'false_fill2010_2');
+// Map.addLayer(fill2010,vizparamsT,'True_fill2010_2');
+Map.addLayer(final2010_2,vizparamsF,'final_false2010_2');
+Map.addLayer(final2010_2,vizparamsT,'final_True2010_2');
+
+//obtain a landsat 7 2010 image with the least land cover
+var filtered2010_3=L7.filterBounds(point3).filterDate('2010-01-01','2010-12-31').sort('CLOUD_COVER').first();
+//rectify scan line error
+var fill2010_3=filtered2010_3.focalMean(1,'square','pixels',20);
+var final2010_3=fill2010_3.blend(filtered2010_3).clip(clip3);
+var final2010_3=final2010_3.clip(Galana).select(bands);
+
+print(filtered2010_3);
+//display L7 2010 image
+// Map.addLayer(filtered2010_3,vizparamsF,'false2010_3');
+// Map.addLayer(filtered2010_3,vizparamsT,'True2010_3');
+//display scan line rectified image
+// Map.addLayer(fill2010_3,vizparamsF,'false_fill2010_3');
+// Map.addLayer(fill2010_3,vizparamsT,'True_fill2010_3');
+Map.addLayer(final2010_3,vizparamsF,'final_false2010_3');
+Map.addLayer(final2010_3,vizparamsT,'final_True2010_3');
+
+
+Export.image.toDrive({
+  image:final2010,
+  description:'image2010_1',
+  scale:30,
+  maxPixels:1e13,
+  region:Galana
+});
+
+Export.image.toDrive({
+  image:final2010_2,
+  description:'image2010_2',
+  scale:30,
+  maxPixels:1e13,
+  region:Galana
+});
+
+Export.image.toDrive({
+  image:final2010_3,
+  description:'image2010_3',
+  scale:30,
+  maxPixels:1e13,
+  region:Galana
+});
+
+
+

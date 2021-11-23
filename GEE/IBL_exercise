@@ -1,0 +1,28 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var myd09 = ee.ImageCollection("MODIS/006/MYD09GA"),
+    mss = ee.ImageCollection("LANDSAT/LM05/C01/T1");
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+//define a region of interest as a point at sfo airport
+var sfopoint=ee.Geometry.Point(-122.3774, 37.6194);
+//center the map to that point
+Map.centerObject(sfopoint,16);
+//Get the surface reflection image from the image collection MY09GA.OO6
+var modisImage=ee.Image(myd09.filterDate('2017-07-01').first());
+//use the modis bands for red, green and red respectively
+var ModisBands=['sur_refl_b01','sur_refl_b03','sur_refl_b04'];
+//define visualization parameters for modis
+var modisVis={bands:ModisBands,min:0,max:3000}
+// add the modis image to the map
+Map.addLayer(modisImage,modisVis,'MODIS');
+var modisScale=modisImage.select('sur_refl_b01')
+.projection().nominalScale();
+print('Modis Scale is: ',modisScale);
+// filter the mss images by date, location and cloudiness
+var mssImage = ee.Image(mss.filterBounds(Map.getCenter())
+.sort('CLOUD_COVER')
+// Get the least cloudy image.
+.first());
+var mssBands=['B3','B2','B1']
+var mssVis={bands:mssBands,min:0,max:200}
+//Display the image as a colour-IR Composite image
+Map.addLayer(mssImage,mssVis,'mss');

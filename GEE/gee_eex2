@@ -1,0 +1,27 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var myd09 = ee.ImageCollection("MODIS/006/MYD09GA"),
+    mss = ee.ImageCollection("LANDSAT/LM05/C01/T2");
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+// Define a region of interest as a point at SFO airport.
+var sfopoint=ee.Geometry.Point(-122.3774, 37.6194);
+// center the map at that point
+Map.centerObject(sfopoint,16);
+// get a surface reflectance image from modis MY09GA collection
+var modisImage=ee.Image(myd09.filterDate('2017-07-01').first());
+// use these modis bands for red, green and blue respectively.
+var modisBands=['sur_refl_b01','sur_refl_b02','sur_refl_b03'];
+// define visualization parameters for modis
+var modsVis={bands:modisBands,min:0,max:3000};
+// add modis image to the map
+Map.addLayer(modisImage,modsVis,'modis');
+// Get the scale of data of the first bands projection
+var modisScale=modisImage.select('sur_refl_b01').projection().nominalScale();
+print ('Modis Scale:',modisScale);
+// filter mss imagery by location, date and cloudiness
+var mssImage=ee.Image(mss.filterBounds(Map.getCenter()).sort('CLOUD_COVER')//Get images with least cloudness first).
+.first());
+// Display mss image as colour IR composite
+Map.addLayer(mssImage,{bands:['B3','B2','B1'],min:0,max:200},'MSS');
+// Get the scale of mss data from it's projection
+var mssScale=mssImage.select('B1').projection().nominalScale();
+print('MSS Scale:',mssScale);

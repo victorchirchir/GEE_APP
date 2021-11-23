@@ -1,0 +1,23 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var L8 = ee.ImageCollection("LANDSAT/LC08/C01/T1_TOA"),
+    geometry = /* color: #d63000 */ee.Geometry.Point([36.845511731425525, -1.275138303305018]),
+    S2 = ee.ImageCollection("COPERNICUS/S2");
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+var filtered=S2.filterDate('2020-01-02','2020-06-16').filterBounds(geometry);
+var rgb={min:0,max:3000,bands:['B4','B3','B2']};
+var addNDVI=function(img){
+  var ndvi=img.normalizedDifference(['B8','B4']).rename('ndvi');
+  return img.addBands(ndvi);
+};
+var withNdvi=filtered.map(addNDVI);
+var greenest=withNdvi.qualityMosaic('ndvi');
+print (filtered.size());
+Map.addLayer(filtered.select('B[2-5]').median(),rgb,'L8 true colour');
+Map.addLayer(withNdvi.median(),{min:0,max:0.7,bands:'ndvi',palette:'grey,green'},'ndvi');
+Map.addLayer(greenest,rgb,'true colour greenest');
+Map.addLayer(filtered.select('B[2-5]').median(),rgb,'sentinel');
+print(
+  ui.Chart.image.series(withNdvi.select('ndvi'), geometry));
+var rgb=greenest.visualize(rgb);
+Map.addLayer(rgb,{},'rgb vis');
+Export.image.toDrive(rgb,'greenest pixel');

@@ -1,0 +1,28 @@
+// Create a variable that points to a particular Landsat image in the Earth Engine  collection. 
+var myimage = ee.Image('LANDSAT/LT05/C01/T1_TOA/LT05_015030_20100531');
+// Center the map and display the image. 
+Map.setCenter(-76.147, 43.046, 10);
+// Center on City of Syracuse using  level 10 scale 
+Map.addLayer(myimage); 
+//display image using a specific band combination and call the image composite IR
+Map.addLayer(myimage,{bands:['B4','B3','B2']},'ColorIR composite');
+// Create a circle of interest by creating a buffer of 200M around a point and save it as a variable roi
+var roi=ee.Geometry.Point(-76.147, 43.046).buffer(200);
+//dispaly the 200M buffer
+Map.addLayer(roi);
+// Display the clipped version of Roi
+Map.addLayer(myimage.clip(roi));
+//load two landsat images 20 years apart
+var image1=ee.Image('LANDSAT/LT05/C01/T1_TOA/LT05_015030_19880619');
+var image2=ee.Image('LANDSAT/LT05/C01/T1_TOA/LT05_015030_20100531');
+//create a function to compute NDVI in landsat 5 where NIR is band 4 and red band 3.
+var getNDVI=function(image){
+  return image.normalizedDifference(['B4','B3']);
+};
+//compute ndvi of each image
+var ndvi1=getNDVI(image1);
+var ndvi2=getNDVI(image2);
+//Compute difference in NDVI
+var ndvi_difference=ndvi2.subtract(ndvi1);
+Map.addLayer(ndvi_difference)
+

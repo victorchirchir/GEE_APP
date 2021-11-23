@@ -1,0 +1,29 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var mod13 = ee.ImageCollection("MODIS/MOD13A1");
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+var C=mod13.select('EVI');
+function addIndependentVariables(image){
+  var date=image.date();
+  var time=date.difference(ee.Date('2000-01-01'),'year');
+  var sin=time.multiply(2*Math.PI).sin();
+  var cos=time.multiply(2*Math.PI).cos();
+  var independents=ee.Image.cat([sin,cos,time,1]).double();
+  return independents.addBands(image.divide(10000));
+}
+var regression=C.map(addIndependentVariables)
+    .reduce(ee.Reducer.linearRegression(4))
+    .select('coefficients')
+    .arrayProject([0])
+    .arrayFlatten([['sin','cos','slope','offset']]);
+Map.addLayer(regression);
+var sin=regression.select('sin');
+var cos=regression.select('cos');
+var slope=regression.select('slope');
+var offset=regression.select('offset');
+
+var sat=cos.hypot(sin).multiply(2.5);
+var hue=sin.atan2(cos).unitScale(-Math.PI,Math.PI);
+var value=offset.multiply(1.5);
+
+var seasonality=ee.Image.cat([sat,hue,value]).hsvToRgb();
+Map.addLayer(seasonality,{},'seasonality');

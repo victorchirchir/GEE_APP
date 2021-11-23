@@ -1,0 +1,37 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var L7 = ee.ImageCollection("LANDSAT/LE07/C01/T1_TOA"),
+    point = /* color: #d63000 */ee.Geometry.Point([36.74432218774775, -1.393926636034697]),
+    OngataRongai = ee.FeatureCollection("users/vctrchirchir/OngataRongai"),
+    vizParamsFalse = {"bands":["B4","B3","B2"],"min":0,"max":0.5,"gamma":[0.95,1.1,1]},
+    vizParamsTrue = {"bands":["B3","B2","B1"],"min":0,"max":0.5,"gamma":[0.95,1.1,1]},
+    OngataArea = ee.FeatureCollection("users/vctrchirchir/OngataArea");
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+var filtered2000=L7.filterDate('2000-01-01','2000-12-31').filterBounds(point).sort('CLOUD_COVER').first();
+print(filtered2000);
+//clip to area of study
+var ORclip=filtered2000.clip(OngataArea);
+var bands=ORclip.select(['B5','B4','B3','B2'],['swir','nir','red','green']);
+// Map.addLayer(filtered2000,vizParamsTrue,'2000 true colur');
+Map.addLayer(ORclip,vizParamsTrue,'Ongata 2000 true colur');
+
+//NDVI
+var NDVI2000=bands.normalizedDifference(['nir','red']);
+print(NDVI2000);
+Map.addLayer(NDVI2000,{min:-1,max:1,palette:['blue','white','green']},'Ongata 2000 ndvi');
+
+//NDBI
+var NDBI2000=bands.normalizedDifference(['swir','nir']);
+Map.addLayer(NDBI2000,{min:-1,max:1,palette:['blue','green','red']},'Ongata 2000 ndbi');
+//BU
+
+var BU2000=NDBI2000.subtract(NDVI2000);
+Map.addLayer(BU2000,{min:-1,max:1,palette:['green','white','blue','yellow','red']},'Ongata 2000 BU');
+//BAEI
+var red=bands.select(['red']);
+var swir=bands.select(['swir']);
+var nir=bands.select(['nir']);
+var L=0.3;
+var green=bands.select(['green']);
+var BAEI2000=(red.add(L)).divide(green.add(swir));
+print(BAEI2000);
+Map.addLayer(BAEI2000,{min:-1,max:1,palette:['green','white','blue','yellow','red']},'Ongata 2000 BAEI2000');

@@ -1,0 +1,65 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var L8 = ee.ImageCollection("LANDSAT/LC08/C01/T1_TOA"),
+    Kajiado = ee.FeatureCollection("users/vctrchirchir/Kajiado_North"),
+    geometry = /* color: #d63000 */ee.Geometry.Point([36.7143857575993, -1.3771782395133012]),
+    imageVisParam = {"opacity":1,"bands":["B6"],"min":-0.1,"gamma":1},
+    L7 = ee.ImageCollection("LANDSAT/LE07/C01/T1_TOA");
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+var band=['B1','B2','B3','B4','B5','B6'];
+var filtered1=L8.filterBounds(geometry).filterDate('2020-01-01','2021-06-01');
+var filtered=ee.Image(L8.filterBounds(geometry).filterDate('2020-01-01','2021-06-01').sort('CLOUD_COVER').first());
+var filtered2013=ee.Image(L8.filterBounds(geometry).filterDate('2013-05-01','2014-01-01').sort('CLOUD_COVER').first());
+var filtered2000=ee.Image(L7.filterBounds(geometry).filterDate('2000-01-01','2001-06-01').sort('CLOUD_COVER').first());
+print(filtered);
+print(filtered2000);
+var addNDBI=function(img){
+  var ndbi=img.normalizedDifference(['B6','B5']).rename('ndbi');
+  return img.addBands(ndbi);
+};
+var withNDBI=filtered1.map(addNDBI);
+print(withNDBI);
+var addNDVI=function(img){
+  var ndvi=img.normalizedDifference(['B5','B4']).rename('ndvi');
+  return(img.addBands(ndvi));
+};
+var withNDVI=withNDBI.map(addNDVI);
+var SWIR=filtered.select(['B6']);
+var NIR=filtered.select(['B5']);
+var Red_band=filtered.select(['B4']);
+var SWIR2013=filtered2013.select(['B6']);
+var NIR2013=filtered2013.select(['B5']);
+var Red_band2013=filtered2013.select(['B4']);
+var SWIR_L7=filtered2000.select(['B5']);
+var NIR_L7=filtered2000.select(['B4']);
+var Red_L7=filtered2000.select(['B3']);
+var NDBI=SWIR.subtract(NIR).divide(SWIR.add(NIR)).rename('ndbi');
+var NDBI2013=SWIR2013.subtract(NIR2013).divide(SWIR2013.add(NIR2013)).rename('ndbi');
+var NDBI_2000=SWIR_L7.subtract(NIR_L7).divide(SWIR_L7.add(NIR_L7)).rename('ndbi');
+var NDVI2000=NIR_L7.subtract(Red_L7).divide(NIR_L7.add(Red_L7)).rename('ndvi');
+var NDVI2020=NIR.subtract(Red_band).divide(NIR.add(Red_band)).rename('ndvi');
+var BI_2000=NDBI_2000.subtract(NDVI2000);
+var BI_2020=NDBI.subtract(NDVI2020);
+var NDBI_VIZ="111101";
+var withNDBI=filtered.addBands(NDBI).rename('NDBI');
+var clip=NDBI.clip(Kajiado);
+var clip2013=NDBI2013.clip(Kajiado);
+var clip2000=NDBI_2000.clip(Kajiado);
+var clip2000BI=BI_2000.clip(Kajiado);
+var clip2020BI=BI_2020.clip(Kajiado);
+var greenest=withNDVI.qualityMosaic('ndvi');
+print(clip2000);
+Map.addLayer(filtered,{bands:['B4','B3','B2'],min:0,max:0.3},'rgb');
+Map.addLayer(filtered2013,{bands:['B4','B3','B2'],min:0,max:0.3},'rgb 2013');
+Map.addLayer(greenest,{bands:['B4','B3','B2'],min:0,max:0.3},'greenest');
+Map.addLayer(filtered2000,{bands:['B3','B2','B1'],min:0,max:0.3},'landsat 7 2000');
+Map.addLayer(clip,{min:-0.1,max:0.1,palette:'green,red'},'NDBI');
+Map.addLayer(clip2000,{min:-0.1,max:1,palette:'green,red'},'NDBI2000');
+Map.addLayer(greenest.clip(Kajiado),{bands:['ndbi'],min:-0.1,max:0.1,palette:'green,red'},'greenest_NDBI');
+Map.addLayer(clip2000BI,{min:-0.1,max:0.1,palette:'green,red'},'BI2000');
+Map.addLayer(clip2020BI,{min:-0.1,max:0.1,palette:'green,red'},'BI2020');
+Map.addLayer(clip2013,{min:-0.1,max:0.1,palette:'green,red'},'NDBI2013');
+
+
+
+
+
